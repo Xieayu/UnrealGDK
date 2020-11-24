@@ -88,12 +88,12 @@ public:
 	FRPCErrorInfo SendRPC(const FPendingRPCParams& Params);
 	void SendOnEntityCreationRPC(UObject* TargetObject, UFunction* Function, const SpatialGDK::RPCPayload& Payload,
 								 USpatialActorChannel* Channel, const FUnrealObjectRef& TargetObjectRef);
-	void SendCrossServerRPC(UObject* TargetObject, UFunction* Function, const SpatialGDK::RPCPayload& Payload,
-							USpatialActorChannel* Channel, const FUnrealObjectRef& TargetObjectRef);
+	bool SendCrossServerRPC(UObject* TargetObject, const SpatialGDK::RPCSender& Sender, UFunction* Function,
+							const SpatialGDK::RPCPayload& Payload, USpatialActorChannel* Channel, const FUnrealObjectRef& TargetObjectRef);
 	FRPCErrorInfo SendLegacyRPC(UObject* TargetObject, UFunction* Function, const SpatialGDK::RPCPayload& Payload,
 								USpatialActorChannel* Channel, const FUnrealObjectRef& TargetObjectRef);
-	bool SendRingBufferedRPC(UObject* TargetObject, UFunction* Function, const SpatialGDK::RPCPayload& Payload,
-							 USpatialActorChannel* Channel, const FUnrealObjectRef& TargetObjectRef);
+	bool SendRingBufferedRPC(UObject* TargetObject, const SpatialGDK::RPCSender& Sender, UFunction* Function,
+							 const SpatialGDK::RPCPayload& Payload, USpatialActorChannel* Channel, const FUnrealObjectRef& TargetObjectRef);
 	void SendCommandResponse(Worker_RequestId RequestId, Worker_CommandResponse& Response, const FSpatialGDKSpanId& CauseSpanId);
 	void SendEmptyCommandResponse(Worker_ComponentId ComponentId, Schema_FieldId CommandIndex, Worker_RequestId RequestId,
 								  const FSpatialGDKSpanId& CauseSpanId);
@@ -124,7 +124,8 @@ public:
 
 	void UpdateInterestComponent(AActor* Actor);
 
-	void ProcessOrQueueOutgoingRPC(const FUnrealObjectRef& InTargetObjectRef, SpatialGDK::RPCPayload&& InPayload);
+	void ProcessOrQueueOutgoingRPC(const FUnrealObjectRef& InTargetObjectRef, const SpatialGDK::RPCSender& InSenderInfo,
+								   SpatialGDK::RPCPayload&& InPayload);
 	void ProcessUpdatesQueuedUntilAuthority(Worker_EntityId EntityId, Worker_ComponentId ComponentId);
 
 	void FlushRPCService();
@@ -138,6 +139,7 @@ public:
 	void CreateServerWorkerEntity();
 	void RetryServerWorkerEntityCreation(Worker_EntityId EntityId, int AttemptCounte);
 	void UpdateServerWorkerEntityInterestAndPosition();
+	void UpdateServerWorkerVisibility();
 
 	void ClearPendingRPCs(const Worker_EntityId EntityId);
 

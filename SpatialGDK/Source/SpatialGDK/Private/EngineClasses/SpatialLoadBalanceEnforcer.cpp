@@ -138,6 +138,10 @@ Worker_ComponentUpdate SpatialLoadBalanceEnforcer::CreateAuthorityDelegationUpda
 		case SpatialConstants::METADATA_COMPONENT_ID:
 		case SpatialConstants::PERSISTENCE_COMPONENT_ID:
 			break;
+		case SpatialConstants::CROSSSERVER_SENDER_ACK_ENDPOINT_COMPONENT_ID:
+		case SpatialConstants::CROSSSERVER_RECEIVER_ENDPOINT_COMPONENT_ID:
+			AuthorityDelegationComponent.Delegations.Add(ComponentId, RoutingPartition);
+			break;
 		default:
 			AuthorityDelegationComponent.Delegations.Add(ComponentId, AuthoritativeServerPartition);
 			break;

@@ -36,8 +36,8 @@ public:
 
 	void ProcessIncomingRPCs();
 
-	void ProcessOrQueueIncomingRPC(const FUnrealObjectRef& InTargetObjectRef, const RPCSender& InSender, 
-								   RPCPayload InPayload, TOptional<uint64> RPCIdForLinearEventTrace);
+	void ProcessOrQueueIncomingRPC(const FUnrealObjectRef& InTargetObjectRef, const RPCSender& InSender, RPCPayload InPayload,
+								   TOptional<uint64> RPCIdForLinearEventTrace);
 
 	EPushRPCResult PushRPC(Worker_EntityId EntityId, const RPCSender& Sender, ERPCType Type, RPCPayload Payload, bool bCreatedEntity,
 						   UObject* Target = nullptr, UFunction* Function = nullptr);

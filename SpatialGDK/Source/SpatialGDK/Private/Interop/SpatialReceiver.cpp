@@ -22,6 +22,8 @@
 #include "Interop/GlobalStateManager.h"
 #include "Interop/SpatialPlayerSpawner.h"
 #include "Interop/SpatialSender.h"
+#include "Schema/AuthorityIntent.h"
+#include "Schema/CrossServerEndpoint.h"
 #include "Schema/DynamicComponent.h"
 #include "Schema/RPCPayload.h"
 #include "Schema/SpawnData.h"
@@ -131,15 +133,6 @@ void USpatialReceiver::LeaveCriticalSection()
 			continue;
 		}
 
-		if (PendingAddComponent.ComponentId == SpatialConstants::GDK_DEBUG_COMPONENT_ID)
-		{
-			if (NetDriver->DebugCtx != nullptr)
-			{
-				NetDriver->DebugCtx->OnDebugComponentUpdateReceived(PendingAddComponent.EntityId);
-			}
-			continue;
-		}
-
 		USpatialActorChannel* Channel = NetDriver->GetActorChannelByEntityId(PendingAddComponent.EntityId);
 		if (Channel == nullptr)
 		{
@@ -205,6 +198,8 @@ void USpatialReceiver::OnAddComponent(const Worker_AddComponentOp& Op)
 		return RemoveComponentOp.entity_id == Op.entity_id && RemoveComponentOp.component_id == Op.data.component_id;
 	});
 
+	const USpatialGDKSettings* Settings = GetDefault<USpatialGDKSettings>();
+
 	switch (Op.data.component_id)
 	{
 	case SpatialConstants::METADATA_COMPONENT_ID:
@@ -236,6 +231,10 @@ void USpatialReceiver::OnAddComponent(const Worker_AddComponentOp& Op)
 	case SpatialConstants::STARTUP_ACTOR_MANAGER_COMPONENT_ID:
 	case SpatialConstants::VIRTUAL_WORKER_TRANSLATION_COMPONENT_ID:
 	case SpatialConstants::MULTICAST_RPCS_COMPONENT_ID:
+	case SpatialConstants::CROSSSERVER_SENDER_ENDPOINT_COMPONENT_ID:
+	case SpatialConstants::CROSSSERVER_SENDER_ACK_ENDPOINT_COMPONENT_ID:
+	case SpatialConstants::CROSSSERVER_RECEIVER_ENDPOINT_COMPONENT_ID:
+	case SpatialConstants::CROSSSERVER_RECEIVER_ACK_ENDPOINT_COMPONENT_ID:
 		// We either don't care about processing these components or we only need to store
 		// the data (which is handled by the SpatialStaticComponentView).
 		return;
@@ -336,6 +335,8 @@ void USpatialReceiver::OnRemoveEntity(const Worker_RemoveEntityOp& Op)
 	}
 
 	OnEntityRemovedDelegate.Broadcast(Op.entity_id);
+
+	const USpatialGDKSettings* Settings = GetDefault<USpatialGDKSettings>();
 
 	if (NetDriver->IsServer())
 	{
@@ -1538,6 +1539,8 @@ void USpatialReceiver::ApplyComponentData(USpatialActorChannel& Channel, UObject
 
 void USpatialReceiver::OnComponentUpdate(const Worker_ComponentUpdateOp& Op)
 {
+	const USpatialGDKSettings* Settings = GetDefault<USpatialGDKSettings>();
+
 	SCOPE_CYCLE_COUNTER(STAT_ReceiverComponentUpdate);
 	if (IsEntityWaitingForAsyncLoad(Op.entity_id))
 	{
@@ -1585,6 +1588,11 @@ void USpatialReceiver::OnComponentUpdate(const Worker_ComponentUpdateOp& Op)
 		{
 			NetDriver->DebugCtx->OnDebugComponentUpdateReceived(Op.entity_id);
 		}
+		return;
+	case SpatialConstants::CROSSSERVER_SENDER_ENDPOINT_COMPONENT_ID:
+	case SpatialConstants::CROSSSERVER_SENDER_ACK_ENDPOINT_COMPONENT_ID:
+	case SpatialConstants::CROSSSERVER_RECEIVER_ENDPOINT_COMPONENT_ID:
+	case SpatialConstants::CROSSSERVER_RECEIVER_ACK_ENDPOINT_COMPONENT_ID:
 		return;
 	}
 
@@ -1828,8 +1836,8 @@ void USpatialReceiver::OnCommandRequest(const Worker_Op& Op)
 	UE_LOG(LogSpatialReceiver, Verbose, TEXT("Received command request (entity: %lld, component: %d, function: %s)"), EntityId, ComponentId,
 		   *Function->GetName());
 
-	RPCService->ProcessOrQueueIncomingRPC(ObjectRef, MoveTemp(Payload), /* RPCIdForLinearEventTrace */ TOptional<uint64>{});
-	Sender->SendEmptyCommandResponse(ComponentId, CommandIndex, RequestId, FSpatialGDKSpanId(Op.span_id));
+	RPCService->ProcessOrQueueIncomingRPC(ObjectRef, SpatialGDK::RPCSender(), MoveTemp(Payload), /* RPCIdForLinearEventTrace */ TOptional<uint64>{});
+	Sender->SendEmptyCommandResponse(ComponentId, CommandIndex, RequestId,  FSpatialGDKSpanId(Op.span_id));
 
 	AActor* TargetActor = Cast<AActor>(PackageMap->GetObjectFromEntityId(EntityId));
 #if TRACE_LIB_ACTIVE
@@ -1922,6 +1930,8 @@ void USpatialReceiver::ReceiveClaimPartitionResponse(const Worker_CommandRespons
 
 void USpatialReceiver::FlushRetryRPCs()
 {
+	// RPCService->CheckLocalTargets(NetDriver->WorkerEntityId);
+	// RPCService->InspectStaleEntities();
 	Sender->FlushRetryRPCs();
 }
 

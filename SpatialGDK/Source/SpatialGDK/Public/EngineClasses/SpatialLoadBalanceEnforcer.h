@@ -56,6 +56,7 @@ public:
 
 	void Advance();
 	void ShortCircuitMaybeRefreshAuthorityDelegation(const Worker_EntityId EntityId);
+	void SetRoutingPartition(Worker_PartitionId InRoutingPartition) { RoutingPartition = InRoutingPartition; }
 
 private:
 	void PopulateDataStore(const Worker_EntityId EntityId);
@@ -72,6 +73,7 @@ private:
 	TArray<Worker_EntityId> PendingEntityAuthorityChanges;
 	TMap<Worker_EntityId_Key, LBComponents> DataStore;
 	TUniqueFunction<void(EntityComponentUpdate)> UpdateSender;
+	Worker_PartitionId RoutingPartition;
 };
 
 } // namespace SpatialGDK

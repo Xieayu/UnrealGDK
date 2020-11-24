@@ -11,6 +11,14 @@ EntityComponentOpListBuilder::EntityComponentOpListBuilder()
 {
 }
 
+EntityComponentOpListBuilder EntityComponentOpListBuilder::Move()
+{
+	EntityComponentOpListBuilder MovedBuilder;
+	Swap(OpListData, MovedBuilder.OpListData);
+
+	return MoveTemp(MovedBuilder);
+}
+
 EntityComponentOpListBuilder& EntityComponentOpListBuilder::AddEntity(Worker_EntityId EntityId)
 {
 	Worker_Op Op = {};

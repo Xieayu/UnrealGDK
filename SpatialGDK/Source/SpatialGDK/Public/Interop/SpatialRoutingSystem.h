@@ -58,9 +58,7 @@ private:
 
 	void CreateRoutingPartition(SpatialOSWorkerInterface* Connection);
 	Worker_RequestId RoutingWorkerRequest;
-	// Worker_EntityId RoutingWorkerEntity;
-	Worker_PartitionId RoutingPartition;
-	// FString RoutingWorkerId;
+	Worker_EntityId RoutingPartition;
 	Worker_EntityId RoutingWorkerSystemEntityId;
 	TSet<Worker_EntityId_Key> ReceiversToInspect;
 };

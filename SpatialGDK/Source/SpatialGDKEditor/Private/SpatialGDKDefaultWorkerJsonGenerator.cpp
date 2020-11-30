@@ -54,7 +54,7 @@ bool GenerateAllDefaultWorkerJsons(bool& bOutRedeployRequired)
 			{
 				UE_LOG(LogSpatialGDKDefaultWorkerJsonGenerator, Verbose, TEXT("Could not find worker json at %s"), *JsonPath);
 
-				if (!GenerateDefaultWorkerJson(JsonPath, Worker.ToString(), bOutRedeployRequired))
+				if (!GenerateDefaultWorkerJson(JsonPath, bOutRedeployRequired))
 				{
 					bAllJsonsGeneratedSuccessfully = false;
 				}

@@ -46,20 +46,20 @@ public:
 	virtual const TArray<Worker_Op>& GetWorkerMessages() override;
 	virtual Worker_RequestId SendReserveEntityIdsRequest(uint32_t NumOfEntities) override;
 	virtual Worker_RequestId SendCreateEntityRequest(TArray<FWorkerComponentData> Components, const Worker_EntityId* EntityId,
-													 const TOptional<Trace_SpanId>& SpanId = {}) override;
-	virtual Worker_RequestId SendDeleteEntityRequest(Worker_EntityId EntityId, const TOptional<Trace_SpanId>& SpanId = {}) override;
+													 const FSpatialGDKSpanId& SpanId = {}) override;
+	virtual Worker_RequestId SendDeleteEntityRequest(Worker_EntityId EntityId, const FSpatialGDKSpanId& SpanId = {}) override;
 	virtual void SendAddComponent(Worker_EntityId EntityId, FWorkerComponentData* ComponentData,
-								  const TOptional<Trace_SpanId>& SpanId = {}) override;
+								  const FSpatialGDKSpanId& SpanId = {}) override;
 	virtual void SendRemoveComponent(Worker_EntityId EntityId, Worker_ComponentId ComponentId,
-									 const TOptional<Trace_SpanId>& SpanId = {}) override;
+									 const FSpatialGDKSpanId& SpanId = {}) override;
 	virtual void SendComponentUpdate(Worker_EntityId EntityId, FWorkerComponentUpdate* ComponentUpdate,
-									 const TOptional<Trace_SpanId>& SpanId = {}) override;
+									 const FSpatialGDKSpanId& SpanId = {}) override;
 	virtual Worker_RequestId SendCommandRequest(Worker_EntityId EntityId, Worker_CommandRequest* Request, uint32_t CommandId,
-												const TOptional<Trace_SpanId>& SpanId = {}) override;
+												const FSpatialGDKSpanId& SpanId = {}) override;
 	virtual void SendCommandResponse(Worker_RequestId RequestId, Worker_CommandResponse* Response,
-									 const TOptional<Trace_SpanId>& SpanId = {}) override;
+									 const FSpatialGDKSpanId& SpanId = {}) override;
 	virtual void SendCommandFailure(Worker_RequestId RequestId, const FString& Message,
-									const TOptional<Trace_SpanId>& SpanId = {}) override;
+									const FSpatialGDKSpanId& SpanId = {}) override;
 	virtual void SendLogMessage(uint8_t Level, const FName& LoggerName, const TCHAR* Message) override;
 	virtual Worker_RequestId SendEntityQueryRequest(const Worker_EntityQuery* EntityQuery) override;
 	virtual void SendMetrics(SpatialGDK::SpatialMetrics Metrics) override;
@@ -106,12 +106,12 @@ Worker_RequestId SpatialOSWorkerConnectionSpy::SendReserveEntityIdsRequest(uint3
 
 Worker_RequestId SpatialOSWorkerConnectionSpy::SendCreateEntityRequest(TArray<FWorkerComponentData> Components,
 																	   const Worker_EntityId* EntityId,
-																	   const TOptional<Trace_SpanId>& SpanId)
+																	   const FSpatialGDKSpanId& SpanId)
 {
 	return NextRequestId++;
 }
 
-Worker_RequestId SpatialOSWorkerConnectionSpy::SendDeleteEntityRequest(Worker_EntityId EntityId, const TOptional<Trace_SpanId>& SpanId)
+Worker_RequestId SpatialOSWorkerConnectionSpy::SendDeleteEntityRequest(Worker_EntityId EntityId, const FSpatialGDKSpanId& SpanId)
 {
 	if (Coordinator)
 	{
@@ -122,12 +122,12 @@ Worker_RequestId SpatialOSWorkerConnectionSpy::SendDeleteEntityRequest(Worker_En
 }
 
 void SpatialOSWorkerConnectionSpy::SendAddComponent(Worker_EntityId EntityId, FWorkerComponentData* ComponentData,
-													const TOptional<Trace_SpanId>& SpanId)
+													const FSpatialGDKSpanId& SpanId)
 {
 }
 
 void SpatialOSWorkerConnectionSpy::SendRemoveComponent(Worker_EntityId EntityId, Worker_ComponentId ComponentId,
-													   const TOptional<Trace_SpanId>& SpanId)
+													   const FSpatialGDKSpanId& SpanId)
 {
 	if (Coordinator)
 	{
@@ -137,7 +137,7 @@ void SpatialOSWorkerConnectionSpy::SendRemoveComponent(Worker_EntityId EntityId,
 }
 
 void SpatialOSWorkerConnectionSpy::SendComponentUpdate(Worker_EntityId EntityId, FWorkerComponentUpdate* ComponentUpdate,
-													   const TOptional<Trace_SpanId>& SpanId)
+													   const FSpatialGDKSpanId& SpanId)
 {
 	bHadUpdates = true;
 
@@ -153,18 +153,18 @@ void SpatialOSWorkerConnectionSpy::SendComponentUpdate(Worker_EntityId EntityId,
 }
 
 Worker_RequestId SpatialOSWorkerConnectionSpy::SendCommandRequest(Worker_EntityId EntityId, Worker_CommandRequest* Request,
-																  uint32_t CommandId, const TOptional<Trace_SpanId>& SpanId)
+																  uint32_t CommandId, const FSpatialGDKSpanId& SpanId)
 {
 	return NextRequestId++;
 }
 
 void SpatialOSWorkerConnectionSpy::SendCommandResponse(Worker_RequestId RequestId, Worker_CommandResponse* Response,
-													   const TOptional<Trace_SpanId>& SpanId)
+													   const FSpatialGDKSpanId& SpanId)
 {
 }
 
 void SpatialOSWorkerConnectionSpy::SendCommandFailure(Worker_RequestId RequestId, const FString& Message,
-													  const TOptional<Trace_SpanId>& SpanId)
+													  const FSpatialGDKSpanId& SpanId)
 {
 }
 

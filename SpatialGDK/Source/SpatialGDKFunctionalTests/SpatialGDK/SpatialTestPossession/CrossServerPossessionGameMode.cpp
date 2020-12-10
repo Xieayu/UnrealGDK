@@ -15,12 +15,12 @@ ACrossServerPossessionGameMode::ACrossServerPossessionGameMode()
 AActor* ACrossServerPossessionGameMode::FindPlayerStart_Implementation(AController* Player, const FString& IncomingName)
 {
 	Generate_SpawnPoints();
-	
-	if (Player == nullptr) 
+
+	if (Player == nullptr)
 	{
 		return SpawnPoints[PlayersSpawned % SpawnPoints.Num()];
 	}
-	
+
 	const int32 PlayerUniqueID = Player->GetUniqueID();
 	AActor** SpawnPoint = PlayerIdToSpawnPointMap.Find(PlayerUniqueID);
 	if (SpawnPoint != nullptr)
@@ -48,9 +48,12 @@ void ACrossServerPossessionGameMode::Generate_SpawnPoints()
 		SpawnInfo.bDeferConstruction = false;
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		SpawnPoints.Add(World->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), FVector(-500.0f, -500.0f, 50.0f), FRotator::ZeroRotator, SpawnInfo));
-		SpawnPoints.Add(World->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), FVector(500.0f, -500.0f, 50.0f), FRotator::ZeroRotator, SpawnInfo));
-		SpawnPoints.Add(World->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), FVector(-500.0f, 500.0f, 50.0f), FRotator::ZeroRotator, SpawnInfo));
+		SpawnPoints.Add(World->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), FVector(-500.0f, -500.0f, 50.0f),
+														FRotator::ZeroRotator, SpawnInfo));
+		SpawnPoints.Add(World->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), FVector(500.0f, -500.0f, 50.0f), FRotator::ZeroRotator,
+														SpawnInfo));
+		SpawnPoints.Add(World->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), FVector(-500.0f, 500.0f, 50.0f), FRotator::ZeroRotator,
+														SpawnInfo));
 
 		bInitializedSpawnPoints = true;
 	}

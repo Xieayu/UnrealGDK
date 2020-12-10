@@ -5,13 +5,13 @@
 #include "Containers/Array.h"
 #include "EngineClasses/SpatialNetDriver.h"
 #include "EngineClasses/SpatialPossession.h"
-#include "GameMapsSettings.h"
-#include "GameFramework/PlayerController.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameFramework/PlayerController.h"
+#include "GameMapsSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "LoadBalancing/LayeredLBStrategy.h"
-#include "SpatialGDKFunctionalTests/SpatialGDK/TestActors/TestMovementCharacter.h"
 #include "SpatialFunctionalTestFlowController.h"
+#include "SpatialGDKFunctionalTests/SpatialGDK/TestActors/TestMovementCharacter.h"
 #include "TestPossessionPawn.h"
 #include "TestPossessionPlayerController.h"
 #include "Utils/SpatialStatics.h"
@@ -29,7 +29,7 @@ ACrossServerMultiPossessionTest::ACrossServerMultiPossessionTest()
 void ACrossServerMultiPossessionTest::PrepareTest()
 {
 	Super::PrepareTest();
-	
+
 	AddStep(TEXT("EnsureSpatialOS"), FWorkerDefinition::AllServers, nullptr, [this]() {
 		ULayeredLBStrategy* LoadBalanceStrategy = GetLoadBalancingStrategy();
 		if (LoadBalanceStrategy == nullptr)
@@ -45,51 +45,54 @@ void ACrossServerMultiPossessionTest::PrepareTest()
 			FinishStep();
 		}
 	});
-	
-	AddStep(TEXT("Cross-Server Possession: Create Pawn"), FWorkerDefinition::Server(1), nullptr, [this]() {		
-		ATestPossessionPawn* Pawn = GetWorld()->SpawnActor<ATestPossessionPawn>(FVector(500.0f, 500.0f, 50.0f), FRotator::ZeroRotator, FActorSpawnParameters());
+
+	AddStep(TEXT("Cross-Server Possession: Create Pawn"), FWorkerDefinition::Server(1), nullptr, [this]() {
+		ATestPossessionPawn* Pawn =
+			GetWorld()->SpawnActor<ATestPossessionPawn>(FVector(500.0f, 500.0f, 50.0f), FRotator::ZeroRotator, FActorSpawnParameters());
 		RegisterAutoDestroyActor(Pawn);
 		FinishStep();
 	});
-	
-	AddStep(TEXT("Cross-Server Possession: Shown who should have authority"), FWorkerDefinition::Server(1), nullptr, nullptr, [this](float DeltaTime) {
-		ULayeredLBStrategy* LoadBalanceStrategy = GetLoadBalancingStrategy();
-		if (LoadBalanceStrategy != nullptr)
-		{
-			if (ATestPossessionPawn* Pawn = GetPawn())
-			{
-				for (ASpatialFunctionalTestFlowController* FlowController : GetFlowControllers())
+
+	AddStep(TEXT("Cross-Server Possession: Shown who should have authority"), FWorkerDefinition::Server(1), nullptr, nullptr,
+			[this](float DeltaTime) {
+				ULayeredLBStrategy* LoadBalanceStrategy = GetLoadBalancingStrategy();
+				if (LoadBalanceStrategy != nullptr)
 				{
-					AController* Controller = Cast<AController>(FlowController->GetOwner());
-					if (Controller != nullptr)
+					if (ATestPossessionPawn* Pawn = GetPawn())
 					{
-						uint32 WorkerId = LoadBalanceStrategy->WhoShouldHaveAuthority(*Controller);
-						LogStep(ELogVerbosity::Log, FString::Printf(TEXT("Controller:%s authoritatived in worker: %d"), *Controller->GetFullName(), WorkerId));
+						for (ASpatialFunctionalTestFlowController* FlowController : GetFlowControllers())
+						{
+							AController* Controller = Cast<AController>(FlowController->GetOwner());
+							if (Controller != nullptr)
+							{
+								uint32 WorkerId = LoadBalanceStrategy->WhoShouldHaveAuthority(*Controller);
+								LogStep(ELogVerbosity::Log, FString::Printf(TEXT("Controller:%s authoritatived in worker: %d"),
+																			*Controller->GetFullName(), WorkerId));
+							}
+						}
+
+						uint32 WorkerId = LoadBalanceStrategy->WhoShouldHaveAuthority(*Pawn);
+						LogStep(ELogVerbosity::Log,
+								FString::Printf(TEXT("Pawn:%s authoritatived in worker: %d"), *GetPawn()->GetFullName(), WorkerId));
+					}
+					else
+					{
+						FinishTest(EFunctionalTestResult::Error, TEXT("Couldn't found pawn for possession"));
 					}
 				}
+				else
+				{
+					FinishTest(EFunctionalTestResult::Error, TEXT("Test requires SpatialOS enabled with Load-Balancing Strategy"));
+				}
+				FinishStep();
+			});
 
-				uint32 WorkerId = LoadBalanceStrategy->WhoShouldHaveAuthority(*Pawn);
-				LogStep(ELogVerbosity::Log, FString::Printf(TEXT("Pawn:%s authoritatived in worker: %d"), *GetPawn()->GetFullName(), WorkerId));
-			}
-			else
-			{
-				FinishTest(EFunctionalTestResult::Error, TEXT("Couldn't found pawn for possession"));
-			}
-		}
-		else
-		{
-			FinishTest(EFunctionalTestResult::Error, TEXT("Test requires SpatialOS enabled with Load-Balancing Strategy"));
-		}
-		FinishStep();
-	});
-	
-	
 	AddStep(TEXT("Cross-Server Possession: controller remote possess"), FWorkerDefinition::AllServers, nullptr, [this]() {
 		RemotePossess(1);
 		RemotePossess(2);
 		RemotePossess(3);
 		FinishStep();
-	});	
+	});
 
 	AddStep(TEXT("Cross-Server Possession: Wait"), FWorkerDefinition::Server(1), nullptr, nullptr, [this](float DeltaTime) {
 		if (WaitTime > MaxWaitTime)
@@ -98,7 +101,7 @@ void ACrossServerMultiPossessionTest::PrepareTest()
 		}
 		WaitTime += DeltaTime;
 	});
-		
+
 	AddStep(TEXT("Cross-Server Possession: Check results"), FWorkerDefinition::AllServers, nullptr, nullptr, [this](float DeltaTime) {
 		if (ATestPossessionPawn* Pawn = GetPawn())
 		{
@@ -117,7 +120,7 @@ void ACrossServerMultiPossessionTest::PrepareTest()
 		}
 		FinishStep();
 	});
-	
+
 	AddStep(TEXT("Cross-Server Possession: Check results"), FWorkerDefinition::AllClients, nullptr, nullptr, [this](float DeltaTime) {
 		if (ATestPossessionPawn* Pawn = GetPawn())
 		{
@@ -185,7 +188,7 @@ void ACrossServerMultiPossessionTest::RemotePossess(int Index)
 			if (Controller->HasAuthority())
 			{
 				LogStep(ELogVerbosity::Log,
-					FString::Printf(TEXT("%s try to remote possess %s"), *Controller->GetFullName(), *Pawn->GetFullName()));
+						FString::Printf(TEXT("%s try to remote possess %s"), *Controller->GetFullName(), *Pawn->GetFullName()));
 				Controller->OnPossessEvent.AddDynamic(this, &ACrossServerMultiPossessionTest::OnPossess);
 				Controller->OnUnPossessEvent.AddDynamic(this, &ACrossServerMultiPossessionTest::OnUnPossess);
 				USpatialPossession::RemotePossess(Controller, Pawn);
@@ -204,10 +207,11 @@ void ACrossServerMultiPossessionTest::RemotePossess(int Index)
 
 void ACrossServerMultiPossessionTest::OnPossess(APawn* Pawn, APlayerController* Controller)
 {
-	LogStep(ELogVerbosity::Log, FString::Printf(TEXT("Controller:%s OnPossess Pawn:%s "),*Controller->GetFullName(), *Pawn->GetFullName()));		
+	LogStep(ELogVerbosity::Log,
+			FString::Printf(TEXT("Controller:%s OnPossess Pawn:%s "), *Controller->GetFullName(), *Pawn->GetFullName()));
 }
 
 void ACrossServerMultiPossessionTest::OnUnPossess(APlayerController* Controller)
 {
-	LogStep(ELogVerbosity::Log, FString::Printf(TEXT("Controller:%s OnUnPossess"),*Controller->GetFullName()));	
+	LogStep(ELogVerbosity::Log, FString::Printf(TEXT("Controller:%s OnUnPossess"), *Controller->GetFullName()));
 }

@@ -3,9 +3,7 @@
 #include "TestPossessionPlayerController.h"
 #include "Engine/World.h"
 
-ATestPossessionPlayerController::ATestPossessionPlayerController()
-{
-}
+ATestPossessionPlayerController::ATestPossessionPlayerController() {}
 
 void ATestPossessionPlayerController::OnPossess(APawn* InPawn)
 {

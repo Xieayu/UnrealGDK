@@ -21,6 +21,6 @@ public:
 	ATestPossessionPlayerController();
 
 	FOnPossess OnPossessEvent;
-	
+
 	FOnUnPossess OnUnPossessEvent;
 };

@@ -16,6 +16,7 @@ public:
 	ACrossServerPossessionTest();
 
 	virtual void PrepareTest() override;
+
 private:
 	APawn* GetPawn();
 	void CreateController(int Index, FVector Position);

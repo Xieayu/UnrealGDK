@@ -132,8 +132,8 @@ void ACrossServerMultiPossessionTest::PrepareTest()
 			AssertTrue(Pawn->GetController() != nullptr, TEXT("GetController of Pawn to check if possessed on server"), Pawn);
 
 			AssertTrue(ATestPossessionPlayerController::OnPossessCalled == 1, TEXT("OnPossess should be called 1 time"));
-			//int OnPossessFailedCalled = GetNumRequiredClients() - 1;
-			//AssertTrue(ATestPossessionPlayerController::OnPossessFailedCalled == OnPossessFailedCalled,
+			// int OnPossessFailedCalled = GetNumRequiredClients() - 1;
+			// AssertTrue(ATestPossessionPlayerController::OnPossessFailedCalled == OnPossessFailedCalled,
 			//		   FString::Printf(TEXT("OnPossessFailed should be called %d times"), OnPossessFailedCalled));
 		}
 		else

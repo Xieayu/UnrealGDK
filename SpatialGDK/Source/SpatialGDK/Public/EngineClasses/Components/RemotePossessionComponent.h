@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
-#include "SpatialCommonTypes.h"
 #include "CoreMinimal.h"
+#include "SpatialCommonTypes.h"
 
 #include "RemotePossessionComponent.generated.h"
 
@@ -29,6 +29,7 @@ public:
 	virtual bool EvaluateMigration(UAbstractLBStrategy* LBStrategy, VirtualWorkerId& WorkerId);
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 public:
 	UPROPERTY(handover)
 	APawn* Target;

@@ -2,18 +2,15 @@
 
 #include "RemotePossessionComponentPlayerController.h"
 #include "Engine/World.h"
+#include "EngineClasses/Components/RemotePossessionComponent.h"
 #include "EngineClasses/SpatialPossession.h"
 #include "Utils/SpatialStatics.h"
-#include "EngineClasses/Components/RemotePossessionComponent.h"
 
 DEFINE_LOG_CATEGORY(LogRemotePossessionComponentPlayerController);
 
 int32 ARemotePossessionComponentPlayerController::OnPossessCalled = 0;
 
-ARemotePossessionComponentPlayerController::ARemotePossessionComponentPlayerController()
-{
-
-}
+ARemotePossessionComponentPlayerController::ARemotePossessionComponentPlayerController() {}
 
 void ARemotePossessionComponentPlayerController::OnPossess(APawn* InPawn)
 {

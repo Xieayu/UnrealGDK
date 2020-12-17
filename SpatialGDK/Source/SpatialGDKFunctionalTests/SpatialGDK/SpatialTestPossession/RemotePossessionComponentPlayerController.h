@@ -7,7 +7,6 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogRemotePossessionComponentPlayerController, Log, All);
 
-
 UCLASS()
 class ARemotePossessionComponentPlayerController : public APlayerController
 {

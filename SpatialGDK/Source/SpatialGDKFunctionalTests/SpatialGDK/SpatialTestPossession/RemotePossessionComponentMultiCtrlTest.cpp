@@ -1,6 +1,6 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
-#include "CrossServerMultiPossessionTest.h"
+#include "RemotePossessionComponentMultiCtrlTest.h"
 
 #include "Containers/Array.h"
 #include "EngineClasses/SpatialNetDriver.h"
@@ -23,24 +23,24 @@
  * The client workers begin with a player controller and their default pawns, which they initially possess.
  * The flow is as follows:
  *  - Setup:
- *    - Specify `GameMode Override` as ACrossServerPossessionGameMode
+ *    - Specify `GameMode Override` as ARemotePossessionComponentGameMode
  *    - Specify `Multi Worker Settings Class` as Zoning 2x2(e.g. BP_Possession_Settings_Zoning2_2 of UnrealGDKTestGyms)
  *	  - Set `Num Required Clients` as 3
  *  - Test:
  *    - One of Controller possessed the Pawn and others failed
  */
 
-const float ACrossServerMultiPossessionTest::MaxWaitTime = 2.0f;
+const float ARemotePossessionComponentMultiCtrlTest::MaxWaitTime = 2.0f;
 
-ACrossServerMultiPossessionTest::ACrossServerMultiPossessionTest()
+ARemotePossessionComponentMultiCtrlTest::ARemotePossessionComponentMultiCtrlTest()
 	: Super()
 	, WaitTime(0.0f)
 {
 	Author = "Ken.Yu";
-	Description = TEXT("Test Cross-Server 3 Controllers Possess 1 Pawn");
+	Description = TEXT("Test Cross-Server Multi Controllers Possess 1 Pawn ");
 }
 
-void ACrossServerMultiPossessionTest::PrepareTest()
+void ARemotePossessionComponentMultiCtrlTest::PrepareTest()
 {
 	Super::PrepareTest();
 
@@ -130,11 +130,7 @@ void ACrossServerMultiPossessionTest::PrepareTest()
 		if (ATestPossessionPawn* Pawn = GetPawn())
 		{
 			AssertTrue(Pawn->GetController() != nullptr, TEXT("GetController of Pawn to check if possessed on server"), Pawn);
-
 			AssertTrue(ATestPossessionPlayerController::OnPossessCalled == 1, TEXT("OnPossess should be called 1 time"));
-			//int OnPossessFailedCalled = GetNumRequiredClients() - 1;
-			//AssertTrue(ATestPossessionPlayerController::OnPossessFailedCalled == OnPossessFailedCalled,
-			//		   FString::Printf(TEXT("OnPossessFailed should be called %d times"), OnPossessFailedCalled));
 		}
 		else
 		{
@@ -144,12 +140,12 @@ void ACrossServerMultiPossessionTest::PrepareTest()
 	});
 }
 
-ATestPossessionPawn* ACrossServerMultiPossessionTest::GetPawn()
+ATestPossessionPawn* ARemotePossessionComponentMultiCtrlTest::GetPawn()
 {
 	return Cast<ATestPossessionPawn>(UGameplayStatics::GetActorOfClass(GetWorld(), ATestPossessionPawn::StaticClass()));
 }
 
-void ACrossServerMultiPossessionTest::CreateController(int Index, FVector Position)
+void ARemotePossessionComponentMultiCtrlTest::CreateController(int Index, FVector Position)
 {
 	ASpatialFunctionalTestFlowController* FlowController = GetFlowController(ESpatialFunctionalTestWorkerType::Client, Index);
 	ATestPossessionPlayerController* PlayerController = Cast<ATestPossessionPlayerController>(FlowController->GetOwner());
@@ -166,7 +162,7 @@ void ACrossServerMultiPossessionTest::CreateController(int Index, FVector Positi
 	}
 }
 
-void ACrossServerMultiPossessionTest::CheckControllerHasAuthority(int Index)
+void ARemotePossessionComponentMultiCtrlTest::CheckControllerHasAuthority(int Index)
 {
 	ASpatialFunctionalTestFlowController* FlowController = GetFlowController(ESpatialFunctionalTestWorkerType::Client, Index);
 	ATestPossessionPlayerController* PlayerController = Cast<ATestPossessionPlayerController>(FlowController->GetOwner());
@@ -180,7 +176,7 @@ void ACrossServerMultiPossessionTest::CheckControllerHasAuthority(int Index)
 	}
 }
 
-void ACrossServerMultiPossessionTest::AddWaitStep(const FWorkerDefinition& Worker)
+void ARemotePossessionComponentMultiCtrlTest::AddWaitStep(const FWorkerDefinition& Worker)
 {
 	AddStep(TEXT("Wait"), Worker, nullptr, nullptr, [this](float DeltaTime) {
 		if (WaitTime > MaxWaitTime)

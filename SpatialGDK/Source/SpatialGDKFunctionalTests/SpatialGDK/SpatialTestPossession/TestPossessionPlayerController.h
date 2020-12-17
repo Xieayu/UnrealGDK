@@ -7,6 +7,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTestPossessionPlayerController, Log, All);
 
+
 UCLASS()
 class ATestPossessionPlayerController : public APlayerController
 {

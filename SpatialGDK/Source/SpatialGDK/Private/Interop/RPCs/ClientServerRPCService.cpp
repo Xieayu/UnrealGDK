@@ -7,6 +7,7 @@
 #include "Schema/ClientEndpoint.h"
 #include "Schema/ServerEndpoint.h"
 #include "SpatialConstants.h"
+#include "SpatialGDKSettings.h"
 
 DEFINE_LOG_CATEGORY(LogClientServerRPCService);
 
@@ -339,11 +340,14 @@ void ClientServerRPCService::ExtractRPCsForType(const Worker_EntityId EntityId, 
 		const uint32 BufferSize = RPCRingBufferUtils::GetRingBufferSize(Type);
 		if (Buffer.LastSentRPCId > LastSeenRPCId + BufferSize)
 		{
-			UE_LOG(LogClientServerRPCService, Warning,
-				   TEXT("ClientServerRPCService::ExtractRPCsForType: RPCs were overwritten without being processed! Entity: %lld, RPC "
-						"type: %s, "
-						"last seen RPC ID: %d, last sent ID: %d, buffer size: %d"),
-				   EntityId, *SpatialConstants::RPCTypeToString(Type), LastSeenRPCId, Buffer.LastSentRPCId, BufferSize);
+			if (RPCRingBufferUtils::ShouldQueueOverflowed(Type))
+			{
+				UE_LOG(LogClientServerRPCService, Warning,
+                       TEXT("ClientServerRPCService::ExtractRPCsForType: RPCs were overwritten without being processed! Entity: %lld, RPC "
+                            "type: %s, "
+                            "last seen RPC ID: %d, last sent ID: %d, buffer size: %d"),
+                       EntityId, *SpatialConstants::RPCTypeToString(Type), LastSeenRPCId, Buffer.LastSentRPCId, BufferSize);
+			}
 			FirstRPCIdToRead = Buffer.LastSentRPCId - BufferSize + 1;
 		}
 

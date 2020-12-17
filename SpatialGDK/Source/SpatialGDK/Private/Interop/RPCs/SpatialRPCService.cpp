@@ -350,7 +350,7 @@ EPushRPCResult SpatialRPCService::PushRPCInternal(const Worker_EntityId EntityId
 	// Check capacity.
 	// If there is enough capacity or the overflow comes from an Unreliable RPC, we send it.
 	// Unreliable RPC overflowing will overwrite the oldest Unreliable RPC from the ring buffer.
-	if ( NotOverflowing || !RPCRingBufferUtils::ShouldQueueOverflowed(Type))
+	if (NotOverflowing || !RPCRingBufferUtils::ShouldQueueOverflowed(Type))
 	{
 		if (EventTracer != nullptr)
 		{
@@ -385,7 +385,7 @@ EPushRPCResult SpatialRPCService::PushRPCInternal(const Worker_EntityId EntityId
 		return EPushRPCResult::QueueOverflowed;
 	}
 
-	return NotOverflowing? EPushRPCResult::Success: EPushRPCResult::DropOverflowed;
+	return NotOverflowing ? EPushRPCResult::Success : EPushRPCResult::DropOverflowed;
 }
 
 FRPCErrorInfo SpatialRPCService::ApplyRPC(const FPendingRPCParams& Params)

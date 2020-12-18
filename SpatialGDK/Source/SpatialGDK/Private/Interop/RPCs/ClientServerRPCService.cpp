@@ -343,10 +343,10 @@ void ClientServerRPCService::ExtractRPCsForType(const Worker_EntityId EntityId, 
 			if (RPCRingBufferUtils::ShouldQueueOverflowed(Type))
 			{
 				UE_LOG(LogClientServerRPCService, Warning,
-                       TEXT("ClientServerRPCService::ExtractRPCsForType: RPCs were overwritten without being processed! Entity: %lld, RPC "
-                            "type: %s, "
-                            "last seen RPC ID: %d, last sent ID: %d, buffer size: %d"),
-                       EntityId, *SpatialConstants::RPCTypeToString(Type), LastSeenRPCId, Buffer.LastSentRPCId, BufferSize);
+					   TEXT("ClientServerRPCService::ExtractRPCsForType: RPCs were overwritten without being processed! Entity: %lld, RPC "
+							"type: %s, "
+							"last seen RPC ID: %d, last sent ID: %d, buffer size: %d"),
+					   EntityId, *SpatialConstants::RPCTypeToString(Type), LastSeenRPCId, Buffer.LastSentRPCId, BufferSize);
 			}
 			FirstRPCIdToRead = Buffer.LastSentRPCId - BufferSize + 1;
 		}
